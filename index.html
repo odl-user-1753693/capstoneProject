@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculator App</title>
+  <style>
+    :root {
+      --bg-color: #ffffff;
+      --text-color: #000000;
+      --button-color: #f0f0f0;
+      --button-hover-color: #dcdcdc;
+    }
+
+    /* Dark mode */
+    .dark-mode {
+      --bg-color: #1a1a1a;
+      --text-color: #ffffff;
+      --button-color: #333333;
+      --button-hover-color: #555555;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .calculator {
+      width: 300px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 20px;
+      background: var(--bg-color);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .display {
+      width: 100%;
+      height: 50px;
+      background-color: var(--button-color);
+      border: none;
+      font-size: 1.5rem;
+      text-align: right;
+      padding: 0 10px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    button {
+      height: 50px;
+      background-color: var(--button-color);
+      border: none;
+      font-size: 1.1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: var(--button-hover-color);
+    }
+
+    .toggle-mode {
+      margin-top: 15px;
+      cursor: pointer;
+      padding: 5px 10px;
+      font-size: 0.9rem;
+      background-color: var(--button-color);
+      border: none;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <input type="text" class="display" id="display" disabled>
+    <div class="buttons">
+      <button class="btn" data-value="7">7</button>
+      <button class="btn" data-value="8">8</button>
+      <button class="btn" data-value="9">9</button>
+      <button class="btn operator" data-value="/">÷</button>
+      <button class="btn" data-value="4">4</button>
+      <button class="btn" data-value="5">5</button>
+      <button class="btn" data-value="6">6</button>
+      <button class="btn operator" data-value="*">×</button>
+      <button class="btn" data-value="1">1</button>
+      <button class="btn" data-value="2">2</button>
+      <button class="btn" data-value="3">3</button>
+      <button class="btn operator" data-value="-">−</button>
+      <button class="btn" data-value="0">0</button>
+      <button class="btn" data-value=".">.</button>
+      <button class="btn" id="clear">C</button>
+      <button class="btn operator" data-value="+">+</button>
+      <button class="btn" id="equals" colspan="4">=</button>
+    </div>
+  </div>
+  <button class="toggle-mode" id="toggleMode">Toggle Light/Dark Mode</button>
+
+  <script>
+    const display = document.getElementById('display');
+    const buttons = document.querySelectorAll('.btn');
+    const toggleModeButton = document.getElementById('toggleMode');
+
+    let currentInput = '';
+    let previousValue = null;
+    let operator = null;
+
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        const value = button.getAttribute('data-value');
+
+        if (value === 'C') {
+          currentInput = '';
+          previousValue = null;
+          operator = null;
+          display.value = '';
+        } else if (value === '=') {
+          calculate();
+        } else if (['+', '-', '*', '/'].includes(value)) {
+          if (currentInput) {
+            previousValue = parseFloat(currentInput);
+            currentInput = '';
+            operator = value;
+          }
+        } else {
+          currentInput += value;
+        }
+
+        display.value = currentInput;
+      });
+    });
+
+    function calculate() {
+      if (previousValue !== null && operator && currentInput) {
+        const currentValue = parseFloat(currentInput);
+        let result;
+
+        switch (operator) {
+          case '+':
+            result = previousValue + currentValue;
+            break;
+          case '-':
+            result = previousValue - currentValue;
+            break;
+          case '*':
+            result = previousValue * currentValue;
+            break;
+          case '/':
+            result = currentValue === 0 ? 'Error' : previousValue / currentValue;
+            break;
+        }
+
+        display.value = result;
+        currentInput = String(result);
+        previousValue = null;
+        operator = null;
+      }
+    }
+
+    toggleModeButton.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+    });
+  </script>
+</body></html>
